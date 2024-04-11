@@ -21,7 +21,7 @@ You can have both wisplight and firefly at one moment.
 
 You can enable visual floating little point and flare around it.
 
-The goal of the mod is to cover a gap of movable light source between Torch and Dverger Circlet.
+The goal of the mod is to fill the gap of movable light source between Torch and Dverger Circlet.
 
 ## Installation (manual)
 extract Firefly.dll folder to your BepInEx\Plugins\ folder.
