@@ -30,18 +30,18 @@ namespace Firefly
             {
                 name = "firefly_ball"
             };
-            ballRenderer.sharedMaterial.SetColor("_EmissionColor", new Color(1f, 0.62f, 0.48f));
+            ballRenderer.sharedMaterial.SetColor("_EmissionColor", lightColor.Value);
 
             ParticleSystem.MainModule mainModule = fireflyPrefab.transform.Find("flare").GetComponent<ParticleSystem>().main;
-            mainModule.startColor = new Color(1f, 0.5f, 0f, 0.5f);
+            mainModule.startColor = new Color(1f, 0.5f, 0f, 0.4f);
 
             ParticleSystemRenderer ballSparcs = fireflyPrefab.transform.Find("sparcs_front").GetComponent<ParticleSystemRenderer>();
             
             ballSparcs.sharedMaterial = new Material(ballSparcs.sharedMaterial);
             ballSparcs.sharedMaterial.name = "firefly_sparcs";
-            ballSparcs.sharedMaterial.SetColor("_EmissionColor", new Color(1f, 0.62f, 0.48f));
+            ballSparcs.sharedMaterial.SetColor("_EmissionColor", lightColor.Value);
 
-            fireflyPrefab.transform.Find("Point light").GetComponent<Light>().color = new Color(1f, 0.5f, 0f, 1f);
+            fireflyPrefab.transform.Find("Point light").GetComponent<Light>().color = lightColor.Value;
 
             ItemDrop fireflyItem = fireflyPrefab.GetComponent<ItemDrop>();
             fireflyItem.m_itemData.m_dropPrefab = fireflyPrefab;

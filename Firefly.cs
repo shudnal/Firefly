@@ -31,12 +31,17 @@ namespace Firefly
         public static ConfigEntry<int> statusEffectDuration;
 
         public static ConfigEntry<Color> lightColor;
+
         public static ConfigEntry<float> lightIntensityOutdoors;
         public static ConfigEntry<float> lightRangeOutdoors;
         public static ConfigEntry<float> lightShadowsOutdoors;
+
         public static ConfigEntry<float> lightIntensityIndoors;
         public static ConfigEntry<float> lightRangeIndoors;
         public static ConfigEntry<float> lightShadowsIndoors;
+
+        public static ConfigEntry<bool> showLightSource;
+        public static ConfigEntry<bool> showLightFlare;
 
         private const string c_rootObjectName = "_shudnalRoot";
         private const string c_rootPrefabsName = "Prefabs";
@@ -90,7 +95,7 @@ namespace Firefly
             statusEffectDuration = config("Item", "Duration", defaultValue: 300, "Duration of status effect");
 
             lightColor = config("Light", "Color", defaultValue: new Color(1f, 0.62f, 0.48f), "Color of firefly light");
-            
+
             lightIntensityOutdoors = config("Light - Outdoors", "Intensity", defaultValue: 1f, "Intensity of light");
             lightRangeOutdoors = config("Light - Outdoors", "Range", defaultValue: 30f, "Range of light");
             lightShadowsOutdoors = config("Light - Outdoors", "Shadows strength", defaultValue: 0.8f, "Strength of shadows");
@@ -98,6 +103,9 @@ namespace Firefly
             lightIntensityIndoors = config("Light - Indoors", "Intensity", defaultValue: 0.8f, "Intensity of light");
             lightRangeIndoors = config("Light - Indoors", "Range", defaultValue: 20f, "Range of light");
             lightShadowsIndoors = config("Light - Indoors", "Shadows strength", defaultValue: 0.9f, "Strength of shadows");
+
+            showLightSource = config("Misc", "Show point of light source", defaultValue: false, "Show floating point of light. Restart to see changes.");
+            showLightFlare = config("Misc", "Show flare around light source", defaultValue: false, "Show flare surrounding point of light. Restart to see changes.");
         }
 
         ConfigEntry<T> config<T>(string group, string name, T defaultValue, ConfigDescription description, bool synchronizedSetting = true)

@@ -113,8 +113,23 @@ namespace Firefly
 
             ballPrefab = InitPrefabClone(demisterBall, "firefly_ball");
 
-            UnityEngine.Object.DestroyImmediate(ballPrefab.transform.Find("demister_ball").gameObject);
             UnityEngine.Object.DestroyImmediate(ballPrefab.transform.Find("effects/Particle System Force Field").gameObject);
+
+            GameObject ball = ballPrefab.transform.Find("demister_ball").gameObject;
+            if (showLightSource.Value)
+            {
+                ball.name = "firefly_ball";
+                ball.transform.localScale = Vector3.one * 0.03f;
+
+                MeshRenderer ballRenderer = ball.GetComponent<MeshRenderer>();
+                ballRenderer.sharedMaterial = new Material(ballRenderer.sharedMaterial)
+                {
+                    name = "firefly_ball"
+                };
+                ballRenderer.sharedMaterial.SetColor("_EmissionColor", lightColor.Value);
+            }
+            else
+                UnityEngine.Object.DestroyImmediate(ball);
 
             AudioSource sfxStart = ballPrefab.transform.Find("effects/SFX Start").GetComponent<AudioSource>();
             sfxStart.volume = 0.2f;
@@ -136,18 +151,33 @@ namespace Firefly
             for (int i = flameTransform.childCount - 1; i >= 0; i--)
             {
                 Transform child = flameTransform.GetChild(i);
-                if (child.name != "sparcs_front")
+                if (child.name == "sparcs_front")
+                {
+                    ParticleSystemRenderer psRenderer = child.GetComponent<ParticleSystemRenderer>();
+                    psRenderer.sharedMaterial = new Material(psRenderer.sharedMaterial)
+                    {
+                        name = "firefly_sparcs"
+                    };
+                    psRenderer.sharedMaterial.SetColor("_EmissionColor", lightColor.Value);
+                }
+                else if (showLightFlare.Value && child.name == "flare")
+                {
+                    child.localScale = Vector3.one * 0.5f;
+                    ParticleSystemRenderer psRenderer = child.GetComponent<ParticleSystemRenderer>();
+                    psRenderer.sharedMaterial = new Material(psRenderer.sharedMaterial)
+                    {
+                        name = "firefly_flare"
+                    };
+                    psRenderer.sharedMaterial.SetColor("_Color", lightColor.Value);
+
+                    ParticleSystem.MainModule mainModule = child.GetComponent<ParticleSystem>().main;
+                    mainModule.startColor = new Color(lightColor.Value.r, lightColor.Value.g, lightColor.Value.b, 0.04f);
+                }
+                else
                 {
                     UnityEngine.Object.DestroyImmediate(flameTransform.GetChild(i).gameObject);
                     continue;
                 }
-
-                ParticleSystemRenderer psRenderer = child.GetComponent<ParticleSystemRenderer>();
-                psRenderer.sharedMaterial = new Material(psRenderer.sharedMaterial)
-                {
-                    name = "firefly_sparcs"
-                };
-                psRenderer.sharedMaterial.SetColor("_EmissionColor", lightColor.Value);
             }
         }
 
