@@ -11,6 +11,56 @@ namespace Firefly
         public const string statusEffectName = "Firefly";
         public static int statusEffectHash = statusEffectName.GetStableHashCode();
 
+        public LightFlicker m_lightFlicker;
+        public LightLod m_lightLod;
+        public Light m_light;
+        public bool m_indoors;
+
+        public override void UpdateStatusEffect(float dt)
+        {
+            base.UpdateStatusEffect(dt);
+            if (!m_ballInstance)
+                return;
+
+            if (!m_light || !m_lightFlicker || !m_lightLod)
+            {
+                m_lightFlicker = m_ballInstance.GetComponentInChildren<LightFlicker>();
+                m_light = m_ballInstance.GetComponentInChildren<Light>();
+                m_lightLod = m_ballInstance.GetComponentInChildren<LightLod>();
+            }
+
+            if (m_ttl != 0 && (m_ttl - GetDuration()) <= m_ttl * 0.1f)
+            {
+                SetLightIntensity(0.4f + 0.6f * (m_ttl - GetDuration()) / (m_ttl * 0.1f));
+            }
+            else if (m_character.InInterior() && !m_indoors)
+            {
+                m_indoors = true;
+                SetLightIntensity(0.8f);
+                m_light.range = 20;
+                m_light.shadowStrength = 0.9f;
+                m_lightLod.m_lightDistance = m_light.range;
+                m_lightLod.m_baseRange = m_light.range;
+                m_lightLod.m_baseShadowStrength = m_light.shadowStrength;
+            }
+            else if (!m_character.InInterior() && m_indoors)
+            {
+                m_indoors = true;
+                SetLightIntensity(1f);
+                m_light.range = 30;
+                m_light.shadowStrength = 0.75f;
+                m_lightLod.m_lightDistance = m_light.range;
+                m_lightLod.m_baseRange = m_light.range;
+                m_lightLod.m_baseShadowStrength = m_light.shadowStrength;
+            }
+        }
+
+        private void SetLightIntensity(float intensity)
+        {
+            m_light.intensity = intensity;
+            m_lightFlicker.m_baseIntensity = intensity;
+        }
+
         public static void AddCustomStatusEffect(ObjectDB odb)
         {
             if (odb.m_StatusEffects.Count > 0)
