@@ -25,8 +25,24 @@ namespace Firefly
         private static ConfigEntry<bool> configLocked;
         private static ConfigEntry<bool> loggingEnabled;
 
+        public static ConfigEntry<int> itemStackSize;
+        public static ConfigEntry<string> itemCraftingStation;
+        public static ConfigEntry<int> itemMinStationLevel;
+        public static ConfigEntry<int> statusEffectDuration;
+
+        public static ConfigEntry<Color> lightColor;
+        public static ConfigEntry<float> lightIntensityOutdoors;
+        public static ConfigEntry<float> lightRangeOutdoors;
+        public static ConfigEntry<float> lightShadowsOutdoors;
+        public static ConfigEntry<float> lightIntensityIndoors;
+        public static ConfigEntry<float> lightRangeIndoors;
+        public static ConfigEntry<float> lightShadowsIndoors;
+
+        private const string c_rootObjectName = "_shudnalRoot";
+        private const string c_rootPrefabsName = "Prefabs";
+
         private static GameObject rootObject;
-        private static GameObject prefabsRoot;
+        private static GameObject rootPrefabs;
 
         public static GameObject fireflyPrefab;
         public static Sprite itemIcon;
@@ -65,8 +81,23 @@ namespace Firefly
         {
             config("General", "NexusID", 2741, "Nexus mod ID for updates", false);
 
-            configLocked = config("General", "Lock Configuration", defaultValue: true, "Configuration is locked and can be changed by server admins only.");
+            configLocked = config("General", "Lock Configuration", defaultValue: true, "Configuration is locked and can be changed by server admins only");
             loggingEnabled = config("General", "Logging enabled", defaultValue: false, "Enable logging. [Not Synced with Server]", false);
+
+            itemStackSize = config("Item", "Stack size", defaultValue: 20, "How many items in stack");
+            itemCraftingStation = config("Item", "Crafting station", defaultValue: "$piece_workbench", "Station to craft item. Leave empty to craft with hands");
+            itemMinStationLevel = config("Item", "Crafting station level", defaultValue: 3, "Minimum level of station required to craft");
+            statusEffectDuration = config("Item", "Duration", defaultValue: 300, "Duration of status effect");
+
+            lightColor = config("Light", "Color", defaultValue: new Color(1f, 0.62f, 0.48f), "Color of firefly light");
+            
+            lightIntensityOutdoors = config("Light - Outdoors", "Intensity", defaultValue: 1f, "Intensity of light");
+            lightRangeOutdoors = config("Light - Outdoors", "Range", defaultValue: 30f, "Range of light");
+            lightShadowsOutdoors = config("Light - Outdoors", "Shadows strength", defaultValue: 0.8f, "Strength of shadows");
+            
+            lightIntensityIndoors = config("Light - Indoors", "Intensity", defaultValue: 0.8f, "Intensity of light");
+            lightRangeIndoors = config("Light - Indoors", "Range", defaultValue: 20f, "Range of light");
+            lightShadowsIndoors = config("Light - Indoors", "Shadows strength", defaultValue: 0.9f, "Strength of shadows");
         }
 
         ConfigEntry<T> config<T>(string group, string name, T defaultValue, ConfigDescription description, bool synchronizedSetting = true)
@@ -117,13 +148,18 @@ namespace Firefly
         private static void InitRootObject()
         {
             if (rootObject == null)
-                rootObject = new GameObject("_fireflyRoot");
+                rootObject = GameObject.Find(c_rootObjectName) ?? new GameObject(c_rootObjectName);
 
-            if (prefabsRoot == null)
+            if (rootPrefabs == null)
             {
-                prefabsRoot = new GameObject("Prefabs");
-                prefabsRoot.transform.SetParent(rootObject.transform, false);
-                prefabsRoot.SetActive(false);
+                rootPrefabs = rootObject.transform.Find(c_rootPrefabsName)?.gameObject;
+
+                if (rootPrefabs == null)
+                {
+                    rootPrefabs = new GameObject(c_rootPrefabsName);
+                    rootPrefabs.transform.SetParent(rootObject.transform, false);
+                    rootPrefabs.SetActive(false);
+                }
             }
         }
 
@@ -132,7 +168,7 @@ namespace Firefly
             InitRootObject();
 
             prefabInit = true;
-            GameObject clonedPrefab = UnityEngine.Object.Instantiate(prefabToClone, prefabsRoot.transform, false);
+            GameObject clonedPrefab = UnityEngine.Object.Instantiate(prefabToClone, rootPrefabs.transform, false);
             prefabInit = false;
             clonedPrefab.name = prefabName;
 
@@ -152,7 +188,5 @@ namespace Firefly
             [HarmonyPriority(Priority.First)]
             private static bool Prefix() => !prefabInit;
         }
-
-
     }
 }

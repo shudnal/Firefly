@@ -36,22 +36,30 @@ namespace Firefly
             else if (m_character.InInterior() && !m_indoors)
             {
                 m_indoors = true;
-                SetLightIntensity(0.8f);
-                m_light.range = 20;
-                m_light.shadowStrength = 0.9f;
+
+                SetLightIntensity(lightIntensityIndoors.Value);
+                m_light.range = lightRangeIndoors.Value;
+                m_light.shadowStrength = lightShadowsIndoors.Value;
+
                 m_lightLod.m_lightDistance = m_light.range;
                 m_lightLod.m_baseRange = m_light.range;
                 m_lightLod.m_baseShadowStrength = m_light.shadowStrength;
+
+                m_light.shadows = m_light.shadowStrength > 0 ? LightShadows.Soft : LightShadows.None;
             }
             else if (!m_character.InInterior() && m_indoors)
             {
                 m_indoors = true;
-                SetLightIntensity(1f);
-                m_light.range = 30;
-                m_light.shadowStrength = 0.75f;
+
+                SetLightIntensity(lightIntensityOutdoors.Value);
+                m_light.range = lightRangeOutdoors.Value;
+                m_light.shadowStrength = lightShadowsOutdoors.Value;
+
                 m_lightLod.m_lightDistance = m_light.range;
                 m_lightLod.m_baseRange = m_light.range;
                 m_lightLod.m_baseShadowStrength = m_light.shadowStrength;
+                
+                m_light.shadows = m_light.shadowStrength > 0 ? LightShadows.Soft : LightShadows.None;
             }
         }
 
@@ -83,8 +91,8 @@ namespace Firefly
                     firefly.m_nameHash = statusEffectHash;
                     firefly.m_icon = itemIcon;
                     firefly.m_name = FireflyItem.itemDropName;
-                    firefly.m_tooltip = FireflyItem.itemDropDescription;
-                    firefly.m_ttl = 60;
+                    firefly.m_tooltip = FireflyItem.statusEffectDescription;
+                    firefly.m_ttl = statusEffectDuration.Value;
                     firefly.m_startMessageType = MessageHud.MessageType.TopLeft;
 
                     if (ballPrefab == null)
@@ -117,11 +125,11 @@ namespace Firefly
             sfx.pitch = 0.75f;
 
             Light ballLight = ballPrefab.transform.Find("effects/Point light").GetComponent<Light>();
-            ballLight.intensity = 1;
-            ballLight.color = new Color(1f, 0.62f, 0.48f);
-            ballLight.range = 30;
-            ballLight.shadows = LightShadows.Soft;
-            ballLight.shadowStrength = 0.75f;
+            ballLight.intensity = lightIntensityOutdoors.Value;
+            ballLight.color = lightColor.Value;
+            ballLight.range = lightRangeOutdoors.Value;
+            ballLight.shadowStrength = lightShadowsOutdoors.Value;
+            ballLight.shadows = ballLight.shadowStrength > 0 ? LightShadows.Soft : LightShadows.None;
 
             Transform flameTransform = ballPrefab.transform.Find("effects/flame");
 
@@ -139,7 +147,7 @@ namespace Firefly
                 {
                     name = "firefly_sparcs"
                 };
-                psRenderer.sharedMaterial.SetColor("_EmissionColor", new Color(1f, 0.62f, 0.48f));
+                psRenderer.sharedMaterial.SetColor("_EmissionColor", lightColor.Value);
             }
         }
 

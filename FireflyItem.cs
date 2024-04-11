@@ -11,6 +11,7 @@ namespace Firefly
         public static int itemHash = itemName.GetStableHashCode();
         public const string itemDropName = "$item_firefly";
         public const string itemDropDescription = "$item_firefly_description";
+        public const string statusEffectDescription = "$se_firefly_description";
 
         private static void CreateFireflyPrefab()
         {
@@ -47,10 +48,10 @@ namespace Firefly
 
             fireflyItem.m_itemData.m_shared.m_icons[0] = itemIcon;
             fireflyItem.m_itemData.m_shared.m_name = itemDropName;
-            fireflyItem.m_itemData.m_shared.m_description = "$npc_dvergrrogue_random_goodbye5";//itemDropDescription;
+            fireflyItem.m_itemData.m_shared.m_description = itemDropDescription;
             fireflyItem.m_itemData.m_shared.m_itemType = ItemDrop.ItemData.ItemType.Consumable;
             fireflyItem.m_itemData.m_shared.m_consumeStatusEffect = ObjectDB.instance.GetStatusEffect(SE_Firefly.statusEffectHash);
-            fireflyItem.m_itemData.m_shared.m_maxStackSize = 20;
+            fireflyItem.m_itemData.m_shared.m_maxStackSize = itemStackSize.Value;
             fireflyItem.m_itemData.m_shared.m_maxQuality = 1;
 
             LogInfo($"Created prefab {fireflyPrefab.name}");
@@ -81,14 +82,14 @@ namespace Firefly
                 if (ObjectDB.instance.m_recipes.RemoveAll(x => x.name == itemName) > 0)
                     LogInfo($"Removed recipe {itemName}");
 
-                CraftingStation station = ObjectDB.instance.m_recipes.FirstOrDefault(rec => rec.m_craftingStation?.m_name == "$piece_workbench")?.m_craftingStation;
+                CraftingStation station = string.IsNullOrWhiteSpace(itemCraftingStation.Value) ? null : ObjectDB.instance.m_recipes.FirstOrDefault(rec => rec.m_craftingStation?.m_name == itemCraftingStation.Value)?.m_craftingStation;
 
                 ItemDrop item = fireflyPrefab.GetComponent<ItemDrop>();
 
                 Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
                 recipe.name = itemName;
                 recipe.m_amount = 1;
-                recipe.m_minStationLevel = 3;
+                recipe.m_minStationLevel = itemMinStationLevel.Value;
                 recipe.m_item = item;
                 recipe.m_enabled = true;
 
@@ -163,30 +164,79 @@ namespace Firefly
         [HarmonyPatch(typeof(Localization), nameof(Localization.SetupLanguage))]
         public static class Localization_SetupLanguage_AddLocalizedWords
         {
-            private static void Postfix(Localization __instance, string language)
+            private static void Postfix(Localization __instance, string language, bool __result)
             {
+                if (!__result)
+                    return;
+
                 __instance.AddWord("item_firefly", GetItemName(language));
                 __instance.AddWord("item_firefly_description", GetItemDescription(language));
+                __instance.AddWord("se_firefly_description", GetStatusEffectTooltip(language));
             }
 
             private static string GetItemName(string language)
             {
                 return language switch
                 {
-                    "English" => "Firefly",
                     "Russian" => "Светлячок",
+                    "Chinese" => "萤火虫",
+                    "Chinese_Trad" => "螢火蟲",
+                    "French" => "Luciole",
+                    "German" => "Glühwürmchen",
+                    "Polish" => "Świetlik",
+                    "Korean" => "반딧불이",
+                    "Spanish" => "Luciérnaga",
+                    "Turkish" => "Ateşböceği",
+                    "Dutch" => "Glimworm",
+                    "Portuguese_Brazilian" => "Vaga-lume",
+                    "Japanese" => "ホタル",
+                    "Ukrainian" => "Світлячок",
                     _ => "Firefly"
                 };
             }
+
             private static string GetItemDescription(string language)
             {
                 return language switch
                 {
-                    "English" => "A bound firefly to guide you through the darkest of nights.",
                     "Russian" => "Светлячок, который проведет вас через самые темные ночи",
-                    _ => "A bound firefly to guide you through the darkest of nights."
+                    "Chinese" => "一只被束缚的萤火虫，引导你度过最黑暗的夜晚",
+                    "Chinese_Trad" => "一隻被束縛的螢火蟲，引導你度過最黑暗的夜晚",
+                    "French" => "Une luciole liée pour vous guider à travers les nuits les plus sombres",
+                    "German" => "Ein gebundenes Glühwürmchen, das Sie durch die dunkelste Nacht führt",
+                    "Polish" => "Związany świetlik, który poprowadzi Cię przez najciemniejsze noce",
+                    "Korean" => "가장 어두운 밤을 안내할 묶인 반딧불이",
+                    "Spanish" => "Una luciérnaga atada que te guiará a través de las noches más oscuras.",
+                    "Turkish" => "En karanlık gecelerde size rehberlik edecek bağlı bir ateş böceği",
+                    "Dutch" => "Een gebonden vuurvliegje om je door de donkerste nachten te leiden",
+                    "Portuguese_Brazilian" => "Um vaga-lume preso para guiá-lo nas noites mais escuras",
+                    "Japanese" => "縛られたホタルがあなたを最も暗い夜へと導きます",
+                    "Ukrainian" => "Прив’язаний світлячок проведе вас у найтемніші ночі",
+                    _ => "A bound firefly to guide you through the darkest of nights"
                 };
             }
+
+            private static string GetStatusEffectTooltip(string language)
+            {
+                return language switch
+                {
+                    "Russian" => "Выпустите светлячка, который будет сопровождать вас некоторое время",
+                    "Chinese" => "释放一只会陪伴你一段时间的萤火虫",
+                    "Chinese_Trad" => "釋放一隻會陪伴你一段時間的螢火蟲",
+                    "French" => "Libérez une luciole qui vous accompagnera pendant quelques temps",
+                    "German" => "Lassen Sie ein Glühwürmchen los, das Sie einige Zeit begleiten wird",
+                    "Polish" => "Wypuść świetlika, a będzie Ci towarzyszył przez jakiś czas",
+                    "Korean" => "한동안 동행할 반딧불을 풀어주세요",
+                    "Spanish" => "Suelta una luciérnaga que te acompañará durante un tiempo",
+                    "Turkish" => "Bir süre size eşlik edecek bir ateş böceğini serbest bırakın",
+                    "Dutch" => "Laat een vuurvlieg los die je een tijdje zal vergezellen",
+                    "Portuguese_Brazilian" => "Solte um vaga-lume que irá te acompanhar por algum tempo",
+                    "Japanese" => "しばらくあなたに同行するホタルを放ちます",
+                    "Ukrainian" => "Випустіть світлячка, який буде супроводжувати вас деякий час",
+                    _ => "Release a firefly that will accompany you for some time"
+                };
+            }
+
         }
 
     }
