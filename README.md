@@ -13,7 +13,7 @@ You can change some item and light properties:
 * light color
 * light intensity, range and shadows strength (indoors and outdoors)
 
-Item recipe: Dandelion, GreydwarfEye, Resin x2.
+Item recipe is confurable: Dandelion, GreydwarfEye, Resin x2.
 
 When the duration is about to end the light intensity will be gradually lowered.
 
@@ -28,6 +28,8 @@ extract Firefly.dll folder to your BepInEx\Plugins\ folder.
 
 ## Configurating
 The best way to handle configs is configuration manager. Choose one that works for you:
+
+https://thunderstore.io/c/valheim/p/shudnal/ConfigurationManager/
 
 https://www.nexusmods.com/site/mods/529
 

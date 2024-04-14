@@ -14,7 +14,7 @@ namespace Firefly
     {
         const string pluginID = "shudnal.Firefly";
         const string pluginName = "Firefly";
-        const string pluginVersion = "1.0.0";
+        const string pluginVersion = "1.0.1";
 
         private readonly Harmony harmony = new Harmony(pluginID);
 
@@ -29,6 +29,7 @@ namespace Firefly
         public static ConfigEntry<string> itemCraftingStation;
         public static ConfigEntry<int> itemMinStationLevel;
         public static ConfigEntry<int> statusEffectDuration;
+        public static ConfigEntry<string> itemRecipe;
 
         public static ConfigEntry<Color> lightColor;
 
@@ -93,6 +94,7 @@ namespace Firefly
             itemCraftingStation = config("Item", "Crafting station", defaultValue: "$piece_workbench", "Station to craft item. Leave empty to craft with hands");
             itemMinStationLevel = config("Item", "Crafting station level", defaultValue: 3, "Minimum level of station required to craft");
             statusEffectDuration = config("Item", "Duration", defaultValue: 300, "Duration of status effect");
+            itemRecipe = config("Item", "Recipe", defaultValue: "Dandelion:1,GreydwarfEye:1,Resin:2", "Item recipe. Restart required to apply.");
 
             lightColor = config("Light", "Color", defaultValue: new Color(1f, 0.62f, 0.48f), "Color of firefly light");
 
@@ -196,5 +198,27 @@ namespace Firefly
             [HarmonyPriority(Priority.First)]
             private static bool Prefix() => !prefabInit;
         }
+        
+        [HarmonyPatch(typeof(ZSyncTransform), nameof(ZSyncTransform.OnEnable))]
+        public static class ZSyncTransform_OnEnable_AddPrefab
+        {
+            [HarmonyPriority(Priority.First)]
+            private static bool Prefix() => !prefabInit;
+        }
+        
+        [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.Awake))]
+        public static class ItemDrop_Awake_AddPrefab
+        {
+            [HarmonyPriority(Priority.First)]
+            private static bool Prefix() => !prefabInit;
+        }
+
+        [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.Start))]
+        public static class ItemDrop_Start_AddPrefab
+        {
+            [HarmonyPriority(Priority.First)]
+            private static bool Prefix() => !prefabInit;
+        }
     }
+
 }

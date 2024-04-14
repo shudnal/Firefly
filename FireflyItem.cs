@@ -2,6 +2,8 @@
 using UnityEngine;
 using System.Linq;
 using static Firefly.Firefly;
+using System.Collections.Generic;
+using System;
 
 namespace Firefly
 {
@@ -96,24 +98,28 @@ namespace Firefly
                 if (station != null)
                     recipe.m_craftingStation = station;
 
-                recipe.m_resources = new Piece.Requirement[3] 
+                List<Piece.Requirement> requirements = new List<Piece.Requirement>();
+                foreach (string requirement in itemRecipe.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    new Piece.Requirement()
+                    string[] req = requirement.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (req.Length != 2)
+                        continue;
+
+                    int amount = int.Parse(req[1]);
+                    if (amount <= 0) 
+                        continue;
+
+                    var prefab = ObjectDB.instance.GetItemPrefab(req[0].Trim());
+                    if (prefab == null)
+                        continue;
+
+                    requirements.Add(new Piece.Requirement()
                     {
-                        m_amount = 1,
-                        m_resItem = ObjectDB.instance.GetItemPrefab("Dandelion").GetComponent<ItemDrop>(),
-                    },
-                    new Piece.Requirement()
-                    {
-                        m_amount = 1,
-                        m_resItem = ObjectDB.instance.GetItemPrefab("GreydwarfEye").GetComponent<ItemDrop>(),
-                    },
-                    new Piece.Requirement()
-                    {
-                        m_amount = 2,
-                        m_resItem = ObjectDB.instance.GetItemPrefab("Resin").GetComponent<ItemDrop>(),
-                    },
+                        m_amount = amount,
+                        m_resItem = prefab.GetComponent<ItemDrop>(),
+                    });
                 };
+                recipe.m_resources = requirements.ToArray();
 
                 ObjectDB.instance.m_recipes.Add(recipe);
             }
@@ -161,17 +167,28 @@ namespace Firefly
             }
         }
 
+        [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui))]
+        public static class FejdStartup_SetupGui_AddLocalizedWords
+        {
+            private static void Postfix()
+            {
+                Localization_SetupLanguage_AddLocalizedWords.AddTranslations(Localization.instance, PlayerPrefs.GetString("language", "English"));
+            }
+        }
+
         [HarmonyPatch(typeof(Localization), nameof(Localization.SetupLanguage))]
         public static class Localization_SetupLanguage_AddLocalizedWords
         {
-            private static void Postfix(Localization __instance, string language, bool __result)
+            private static void Postfix(Localization __instance, string language)
             {
-                if (!__result)
-                    return;
+                AddTranslations(__instance, language);
+            }
 
-                __instance.AddWord("item_firefly", GetItemName(language));
-                __instance.AddWord("item_firefly_description", GetItemDescription(language));
-                __instance.AddWord("se_firefly_description", GetStatusEffectTooltip(language));
+            public static void AddTranslations(Localization localization, string language)
+            {
+                localization.AddWord("item_firefly", GetItemName(language));
+                localization.AddWord("item_firefly_description", GetItemDescription(language));
+                localization.AddWord("se_firefly_description", GetStatusEffectTooltip(language));
             }
 
             private static string GetItemName(string language)
