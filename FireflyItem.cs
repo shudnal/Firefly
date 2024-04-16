@@ -143,8 +143,11 @@ namespace Firefly
         [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake))]
         public static class ObjectDB_Awake_AddPrefab
         {
-            private static void Postfix()
+            private static void Postfix(ObjectDB __instance)
             {
+                if (__instance.m_items.Count == 0 || __instance.GetItemPrefab("Wood") == null)
+                    return;
+
                 RegisterFireflyPrefab();
             }
         }
@@ -152,8 +155,11 @@ namespace Firefly
         [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB))]
         public static class ObjectDB_CopyOtherDB_AddPrefab
         {
-            private static void Postfix()
+            private static void Postfix(ObjectDB __instance)
             {
+                if (__instance.m_items.Count == 0 || __instance.GetItemPrefab("Wood") == null)
+                    return;
+
                 RegisterFireflyPrefab();
             }
         }
