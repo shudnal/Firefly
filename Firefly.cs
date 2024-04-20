@@ -14,7 +14,7 @@ namespace Firefly
     {
         const string pluginID = "shudnal.Firefly";
         const string pluginName = "Firefly";
-        const string pluginVersion = "1.0.2";
+        const string pluginVersion = "1.0.3";
 
         private readonly Harmony harmony = new Harmony(pluginID);
 
@@ -94,7 +94,12 @@ namespace Firefly
             itemCraftingStation = config("Item", "Crafting station", defaultValue: "$piece_workbench", "Station to craft item. Leave empty to craft with hands");
             itemMinStationLevel = config("Item", "Crafting station level", defaultValue: 3, "Minimum level of station required to craft");
             statusEffectDuration = config("Item", "Duration", defaultValue: 300, "Duration of status effect");
-            itemRecipe = config("Item", "Recipe", defaultValue: "Dandelion:1,GreydwarfEye:1,Resin:2", "Item recipe. Restart required to apply.");
+            itemRecipe = config("Item", "Recipe", defaultValue: "Dandelion:1,GreydwarfEye:1,Resin:2", "Item recipe");
+
+            itemCraftingStation.SettingChanged += (sender, args) => FireflyItem.SetFireFlyRecipe();
+            itemMinStationLevel.SettingChanged += (sender, args) => FireflyItem.SetFireFlyRecipe();
+
+            itemStackSize.SettingChanged += (sender, args) => FireflyItem.PatchLanternItemOnConfigChange();
 
             lightColor = config("Light", "Color", defaultValue: new Color(1f, 0.62f, 0.48f), "Color of firefly light");
 

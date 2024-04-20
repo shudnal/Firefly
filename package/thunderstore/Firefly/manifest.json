@@ -1,6 +1,6 @@
 {
   "name": "Firefly",
-  "version_number": "1.0.2",
+  "version_number": "1.0.3",
   "website_url": "https://github.com/shudnal/Firefly",
   "description": "Craftable consumable to spawn firefly following you for a while providing light source.",
   "dependencies": ["denikson-BepInExPack_Valheim-5.4.2202"]

@@ -1,3 +1,6 @@
+# 1.0.3
+* internal refinements on prefab storage and recipe on the fly update
+
 # 1.0.2
 * fixed Jotunn compatibility
 

@@ -2,7 +2,7 @@
 ![logo](https://staticdelivery.nexusmods.com/mods/3667/images/headers/2741_1712869823.jpg)
 Craftable consumable to spawn firefly following you for a while providing light source.
 
-If you like darker nights you can also check [CircletExtended](https://thunderstore.io/c/valheim/p/shudnal/CircletExtended/) mod.
+If you like darker nights you can also check [CircletExtended](https://thunderstore.io/c/valheim/p/shudnal/CircletExtended/) and [HipLantern](https://thunderstore.io/c/valheim/p/shudnal/HipLantern/) mods.
 
 Must be installed on server in multiplayer.
 

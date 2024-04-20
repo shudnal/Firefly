@@ -46,26 +46,37 @@ namespace Firefly
             fireflyPrefab.transform.Find("Point light").GetComponent<Light>().color = lightColor.Value;
 
             ItemDrop fireflyItem = fireflyPrefab.GetComponent<ItemDrop>();
-            fireflyItem.m_itemData.m_dropPrefab = fireflyPrefab;
-
-            fireflyItem.m_itemData.m_shared.m_icons[0] = itemIcon;
-            fireflyItem.m_itemData.m_shared.m_name = itemDropName;
-            fireflyItem.m_itemData.m_shared.m_description = itemDropDescription;
-            fireflyItem.m_itemData.m_shared.m_itemType = ItemDrop.ItemData.ItemType.Consumable;
-            fireflyItem.m_itemData.m_shared.m_consumeStatusEffect = ObjectDB.instance.GetStatusEffect(SE_Firefly.statusEffectHash);
-            fireflyItem.m_itemData.m_shared.m_maxStackSize = itemStackSize.Value;
-            fireflyItem.m_itemData.m_shared.m_maxQuality = 1;
 
             LogInfo($"Created prefab {fireflyPrefab.name}");
+        }
+
+        internal static void PatchFireFlyItemData(ItemDrop.ItemData itemData)
+        {
+            if (itemData == null)
+                return;
+
+            itemData.m_dropPrefab = fireflyPrefab;
+
+            itemData.m_shared.m_icons[0] = itemIcon;
+            itemData.m_shared.m_name = itemDropName;
+            itemData.m_shared.m_description = itemDropDescription;
+            itemData.m_shared.m_itemType = ItemDrop.ItemData.ItemType.Consumable;
+            itemData.m_shared.m_consumeStatusEffect = ObjectDB.instance.GetStatusEffect(SE_Firefly.statusEffectHash);
+            itemData.m_shared.m_maxStackSize = itemStackSize.Value;
+            itemData.m_shared.m_maxQuality = 1;
         }
 
         private static void RegisterFireflyPrefab()
         {
             ClearPrefabReferences();
 
-            CreateFireflyPrefab();
+            if (!(bool)fireflyPrefab)
+                CreateFireflyPrefab();
+
             if (!(bool)fireflyPrefab)
                 return;
+
+            PatchFireFlyItemData(fireflyPrefab.GetComponent<ItemDrop>()?.m_itemData);
 
             if (ObjectDB.instance && !ObjectDB.instance.m_itemByHash.ContainsKey(itemHash))
             {
@@ -79,10 +90,16 @@ namespace Firefly
                 ZNetScene.instance.m_namedPrefabs.Add(itemHash, fireflyPrefab);
             }
 
+            SetFireFlyRecipe();
+
+        }
+
+        internal static void SetFireFlyRecipe()
+        {
             if (ObjectDB.instance)
             {
                 if (ObjectDB.instance.m_recipes.RemoveAll(x => x.name == itemName) > 0)
-                    LogInfo($"Removed recipe {itemName}");
+                    LogInfo($"Replaced recipe {itemName}");
 
                 CraftingStation station = string.IsNullOrWhiteSpace(itemCraftingStation.Value) ? null : ObjectDB.instance.m_recipes.FirstOrDefault(rec => rec.m_craftingStation?.m_name == itemCraftingStation.Value)?.m_craftingStation;
 
@@ -106,7 +123,7 @@ namespace Firefly
                         continue;
 
                     int amount = int.Parse(req[1]);
-                    if (amount <= 0) 
+                    if (amount <= 0)
                         continue;
 
                     var prefab = ObjectDB.instance.GetItemPrefab(req[0].Trim());
@@ -150,6 +167,25 @@ namespace Firefly
 
                 RegisterFireflyPrefab();
             }
+        }
+
+        internal static void PatchInventory(Inventory inventory)
+        {
+            if (inventory == null)
+                return;
+
+            List<ItemDrop.ItemData> items = new List<ItemDrop.ItemData>();
+            inventory.GetAllItems(itemDropName, items);
+
+            foreach (ItemDrop.ItemData item in items)
+                PatchFireFlyItemData(item);
+        }
+
+        internal static void PatchLanternItemOnConfigChange()
+        {
+            PatchFireFlyItemData(fireflyPrefab?.GetComponent<ItemDrop>()?.m_itemData);
+
+            PatchInventory(Player.m_localPlayer?.GetInventory());
         }
 
         [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB))]
