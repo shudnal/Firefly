@@ -45,8 +45,6 @@ namespace Firefly
 
             fireflyPrefab.transform.Find("Point light").GetComponent<Light>().color = lightColor.Value;
 
-            ItemDrop fireflyItem = fireflyPrefab.GetComponent<ItemDrop>();
-
             LogInfo($"Created prefab {fireflyPrefab.name}");
         }
 
@@ -64,6 +62,7 @@ namespace Firefly
             itemData.m_shared.m_consumeStatusEffect = ObjectDB.instance.GetStatusEffect(SE_Firefly.statusEffectHash);
             itemData.m_shared.m_maxStackSize = itemStackSize.Value;
             itemData.m_shared.m_maxQuality = 1;
+            itemData.m_shared.m_weight = itemWeight.Value;
         }
 
         private static void RegisterFireflyPrefab()
@@ -91,7 +90,6 @@ namespace Firefly
             }
 
             SetFireFlyRecipe();
-
         }
 
         internal static void SetFireFlyRecipe()

@@ -12,6 +12,7 @@ You can change some item and light properties:
 * duration
 * light color
 * light intensity, range and shadows strength (indoors and outdoors)
+* item weight
 
 Item recipe is confurable: Dandelion, GreydwarfEye, Resin x2.
 
