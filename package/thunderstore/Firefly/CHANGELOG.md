@@ -1,3 +1,6 @@
+# 1.0.5
+* status effect made independent of demister to provide compatibility
+
 # 1.0.4
 * configurable weight
 
