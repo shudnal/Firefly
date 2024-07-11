@@ -1,3 +1,6 @@
+# 1.0.6
+* firefly movement made different from demister ball trajectory
+
 # 1.0.5
 * status effect made independent of demister to provide compatibility
 

@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using static Firefly.Firefly;
 
@@ -71,16 +70,7 @@ namespace Firefly
                 SE_Demister demister = odb.m_StatusEffects.Find(se => se.name == "Demister") as SE_Demister;
                 if (demister != null && !odb.m_StatusEffects.Any(se => se.name == statusEffectName))
                 {
-                    SE_Firefly firefly = ScriptableObject.CreateInstance<SE_Firefly>();
-
-                    foreach (FieldInfo property in demister.GetType().GetFields())
-                    {
-                        FieldInfo field = firefly.GetType().GetField(property.Name);
-                        if (field == null)
-                            continue;
-
-                        field.SetValue(firefly, property.GetValue(demister));
-                    }
+                    SE_Firefly firefly = CreateInstance<SE_Firefly>();
 
                     firefly.name = statusEffectName;
                     firefly.m_nameHash = statusEffectHash;
