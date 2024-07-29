@@ -14,7 +14,7 @@ namespace Firefly
     {
         const string pluginID = "shudnal.Firefly";
         const string pluginName = "Firefly";
-        const string pluginVersion = "1.0.6";
+        const string pluginVersion = "1.0.7";
 
         private readonly Harmony harmony = new Harmony(pluginID);
 
@@ -186,6 +186,9 @@ namespace Firefly
         public static GameObject InitPrefabClone(GameObject prefabToClone, string prefabName)
         {
             InitRootObject();
+
+            if (rootPrefabs.transform.Find(prefabName) != null)
+                return rootPrefabs.transform.Find(prefabName).gameObject;
 
             prefabInit = true;
             GameObject clonedPrefab = Instantiate(prefabToClone, rootPrefabs.transform, false);

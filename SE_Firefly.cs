@@ -10,6 +10,9 @@ namespace Firefly
         public const string statusEffectName = "Firefly";
         public static int statusEffectHash = statusEffectName.GetStableHashCode();
 
+        public const string ballPrefabName = "firefly_ball";
+        public static int ballPrefaHash = ballPrefabName.GetStableHashCode();
+
         public LightFlicker m_lightFlicker;
         public LightLod m_lightLod;
         public Light m_light;
@@ -84,7 +87,15 @@ namespace Firefly
                         CloneBallPrefab(demister.m_ballPrefab);
 
                     if (ballPrefab != null)
+                    {
                         firefly.m_ballPrefab = ballPrefab;
+
+                        if (ZNetScene.instance && !ZNetScene.instance.m_namedPrefabs.ContainsKey(ballPrefaHash))
+                        {
+                            ZNetScene.instance.m_prefabs.Add(ballPrefab);
+                            ZNetScene.instance.m_namedPrefabs.Add(ballPrefaHash, ballPrefab);
+                        }
+                    }
 
                     odb.m_StatusEffects.Add(firefly);
                 }
@@ -96,7 +107,7 @@ namespace Firefly
             if (demisterBall == null)
                 return;
 
-            ballPrefab = InitPrefabClone(demisterBall, "firefly_ball");
+            ballPrefab = InitPrefabClone(demisterBall, ballPrefabName);
 
             UnityEngine.Object.DestroyImmediate(ballPrefab.transform.Find("effects/Particle System Force Field").gameObject);
 
@@ -240,7 +251,7 @@ namespace Firefly
                 m_light.range = lightRangeIndoors.Value;
                 m_light.shadowStrength = lightShadowsIndoors.Value;
 
-                m_lightLod.m_lightDistance = m_light.range;
+                m_lightLod.m_lightDistance = 40f;
                 m_lightLod.m_baseRange = m_light.range;
                 m_lightLod.m_baseShadowStrength = m_light.shadowStrength;
 
@@ -254,7 +265,7 @@ namespace Firefly
                 m_light.range = lightRangeOutdoors.Value;
                 m_light.shadowStrength = lightShadowsOutdoors.Value;
 
-                m_lightLod.m_lightDistance = m_light.range;
+                m_lightLod.m_lightDistance = 40f;
                 m_lightLod.m_baseRange = m_light.range;
                 m_lightLod.m_baseShadowStrength = m_light.shadowStrength;
 

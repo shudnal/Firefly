@@ -1,3 +1,6 @@
+# 1.0.7
+* consistent light state for other players in multiplayer
+
 # 1.0.6
 * firefly movement made different from demister ball trajectory
 
