@@ -12,9 +12,9 @@ namespace Firefly
     [BepInPlugin(pluginID, pluginName, pluginVersion)]
     public class Firefly : BaseUnityPlugin
     {
-        const string pluginID = "shudnal.Firefly";
-        const string pluginName = "Firefly";
-        const string pluginVersion = "1.0.7";
+        public const string pluginID = "shudnal.Firefly";
+        public const string pluginName = "Firefly";
+        public const string pluginVersion = "1.0.8";
 
         private readonly Harmony harmony = new Harmony(pluginID);
 
