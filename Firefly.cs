@@ -14,7 +14,7 @@ namespace Firefly
     {
         public const string pluginID = "shudnal.Firefly";
         public const string pluginName = "Firefly";
-        public const string pluginVersion = "1.0.8";
+        public const string pluginVersion = "1.0.9";
 
         private readonly Harmony harmony = new Harmony(pluginID);
 

@@ -75,12 +75,15 @@ namespace Firefly
             if (!(bool)fireflyPrefab)
                 return;
 
-            PatchFireFlyItemData(fireflyPrefab.GetComponent<ItemDrop>()?.m_itemData);
+            ItemDrop.ItemData itemData = fireflyPrefab.GetComponent<ItemDrop>()?.m_itemData;
+            PatchFireFlyItemData(itemData);
 
             if (ObjectDB.instance && !ObjectDB.instance.m_itemByHash.ContainsKey(itemHash))
             {
                 ObjectDB.instance.m_items.Add(fireflyPrefab);
                 ObjectDB.instance.m_itemByHash.Add(itemHash, fireflyPrefab);
+                if (itemData != null)
+                    ObjectDB.instance.m_itemByData[itemData.m_shared] = fireflyPrefab;
             }
 
             if (ZNetScene.instance && !ZNetScene.instance.m_namedPrefabs.ContainsKey(itemHash))
